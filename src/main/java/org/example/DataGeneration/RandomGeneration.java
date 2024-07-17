@@ -1,56 +1,25 @@
 package org.example.DataGeneration;
 
+import org.example.Enum.PaymentType;
+import org.example.Enum.TypeOfCoffee;
 import org.example.Models.Coffee;
+import org.example.Repository.GenerationDataRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class RandomGeneration implements Generatable{
+public class RandomGeneration {
+    private final GenerationDataRepository generationDataRepository;
 
-    private int count;
-
-    private enum TypeOfCoffee{
-        AMERICANO, LATTE, MOCHA, CAPPUCCINO, RISTRETTO, MACCHIATO, LUNGO,
-        FLAT_WHITE, CORRETTO, ICED_COFFEE, AFFOGATO, IRISH_COFFEE,
-        TURKISH_COFFEE, FRAPPE, ESPRESSO;
-
-        public static TypeOfCoffee getRandomTypeOfCoffee(){
-            return values()[new Random().nextInt(values().length)];
-        }
-
-        @Override
-        public String toString() {
-            // Преобразуем имя enum в строку с первой заглавной буквой и остальными строчными
-            String lower = name().toLowerCase();
-            return Character.toUpperCase(lower.charAt(0)) + lower.substring(1).replace('_', ' ');
-        }
-
-
-    }
-
-    private enum PaymentType{
-        CARD, CASH;
-
-        public static PaymentType getRandomPaymentType(){
-            return values()[new Random().nextInt(values().length)];
-        }
-
-        @Override
-        public String toString() {
-            // Преобразуем имя enum в строку с первой заглавной буквой и остальными строчными
-            String lower = name().toLowerCase();
-            return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
-        }
-    }
-
-
-    public RandomGeneration(int count) {
-        this.count = count;
+    public RandomGeneration(GenerationDataRepository generationDataRepository) {
+        this.generationDataRepository = generationDataRepository;
     }
 
     // Метод создает классы с рандомными данными и передает их в репозиторий
-   @Override
-    public void dataGeneration(){
-        for(int i = 0; i < count; i++){
+    public void dataGeneration(int count) {
+        List<Coffee> coffeeList = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
             Coffee coffee = new Coffee.CoffeeBuilder()
                     .id(new Random().nextInt(count * 10))
                     .paymentType(PaymentType.getRandomPaymentType().toString())
@@ -58,17 +27,9 @@ public class RandomGeneration implements Generatable{
                     .typeOfCoffee(TypeOfCoffee.getRandomTypeOfCoffee().toString())
                     .build();
 
-
-            // Тут отпраялем наше кофе в репозиторий условным методом add
-            // Some class.add(coffee);
+            coffeeList.add(coffee);
+            generationDataRepository.setCoffeeList(coffeeList);
         }
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
+        System.out.println("Способ генерации 'Случайный' выполнен");
     }
 }

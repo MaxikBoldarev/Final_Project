@@ -1,68 +1,55 @@
 package org.example.DataGeneration;
 
 import org.example.Models.Coffee;
+import org.example.Repository.GenerationDataRepository;
 
-public class UserGeneration implements Generatable {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
-    private int id;
+public class UserGeneration {
+    private final GenerationDataRepository generationDataRepository;
 
-    private String paymentType;
-
-    private int price;
-
-    private String typeOfCoffee;
-
-    public UserGeneration(int id, String paymentType, int price, String typeOfCoffee) {
-        this.id = id;
-        this.paymentType = paymentType;
-        this.price = price;
-        this.typeOfCoffee = typeOfCoffee;
+    public UserGeneration(GenerationDataRepository generationDataRepository) {
+        this.generationDataRepository = generationDataRepository;
     }
 
-   // Метод создает класс коффе с данными который ввел пользователь и передает их в репозиторий
-    @Override
-    public void dataGeneration() {
-        Coffee coffee = new Coffee.CoffeeBuilder()
-                .id(id)
-                .paymentType(paymentType)
-                .price(price)
-                .typeOfCoffee(typeOfCoffee)
-                .build();
+    public void dataGeneration(int count) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Введите целое число больше 0");
+        int number = scanner.nextInt();
+        if (number <= 0) {
+            System.out.println("Число равно или меньше 0");
+        } else {
+            System.out.println("""
+                    Введите названия Кофе через ';' в одну строку.
+                    Слова будут использованы для генерации""");
+            String letter = scanner.next();
+            String[] coffeeArray = letter.trim().split(";");
 
+            System.out.println("Введите способы оплаты через ';' в одну строку");
+            String payment = scanner.next();
+            String[] paymentArray = payment.trim().split(";");
 
-        // Отправляем в репозиторий
-        // SomeClass.add(coffee)
-    }
+            if (letter.trim().length() <= 6) {
+                System.out.println("Слово меньше или равно 6 символам");
+            } else {
+                List<Coffee> coffeeList = new ArrayList<>();
 
-    public int getId() {
-        return id;
-    }
+                for (int i = 1; i <= count; i++) {
+                    Coffee coffee = new Coffee.CoffeeBuilder()
+                            .id(i)
+                            .paymentType(paymentArray[new Random().nextInt(paymentArray.length)])
+                            .price(new Random().nextInt(number + 1))
+                            .typeOfCoffee(coffeeArray[new Random().nextInt(coffeeArray.length)])
+                            .build();
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getPaymentType() {
-        return paymentType;
-    }
-
-    public void setPaymentType(String paymentType) {
-        this.paymentType = paymentType;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public String getTypeOfCoffee() {
-        return typeOfCoffee;
-    }
-
-    public void setTypeOfCoffee(String typeOfCoffee) {
-        this.typeOfCoffee = typeOfCoffee;
+                    coffeeList.add(coffee);
+                    generationDataRepository.setCoffeeList(coffeeList);
+                }
+                System.out.println("Способ генерации 'Ручной' выполнен");
+            }
+        }
     }
 }

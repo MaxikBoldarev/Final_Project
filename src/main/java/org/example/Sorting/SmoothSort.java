@@ -1,22 +1,44 @@
-package org.example.sorting;
+package org.example.Sorting;
+
+import org.example.Models.Coffee;
+import org.example.Models.Node;
+import org.example.Repository.GenerationDataRepository;
+import org.example.Repository.SortedDataRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class SmoothSort {
-    public static void main(String[] args) {
+    private final GenerationDataRepository generationDataRepository;
+    private final SortedDataRepository sortedDataRepository;
 
-        int[] arr = {2,100,200,35,15,164}; //Подставить генератор чисел
-        SmoothSort sort = new SmoothSort();
-        sort.sort(arr);
-        System.out.println(sort.counter);
+    public SmoothSort(GenerationDataRepository generationDataRepository, SortedDataRepository sortedDataRepository) {
+        this.generationDataRepository = generationDataRepository;
+        this.sortedDataRepository = sortedDataRepository;
     }
 
     int counter;
 
-    public void sort(int[] array) {
-        sortLocal(array, array.length);
+    public void sort() {
+        int[] arr = generationDataRepository.getCoffeeListForSorted();
+        sortLocal(arr, arr.length);
+        System.out.println("Количество перестановок " + counter);
+        writingToTheRepository(arr);
+    }
+
+    private void writingToTheRepository(int[] primaryArray) {
+        List<Coffee> coffeeList = generationDataRepository.getCoffeeList();
+        List<Coffee> sortedCoffeeList = new ArrayList<>();
+
+        for (int i = 0; i < primaryArray.length; i++) {
+            for (Coffee coffee : coffeeList) {
+                if (primaryArray[i] == coffee.getPrice()) {
+                    sortedCoffeeList.add(coffee);
+                }
+            }
+        }
+        sortedDataRepository.setCoffeeList(sortedCoffeeList);
     }
 
     //Генерация массива чисел Леонардо
@@ -66,6 +88,7 @@ public class SmoothSort {
             System.out.println(Arrays.toString(array));
         }
     }
+
     //Формируем отсортированный массив
     public void setArray(int[] array, Node root, int bound) { //массив, узел, граница кучи(длина массива)
         Node currentRoot = root; //самый правый элемент, начало кучи.
@@ -73,21 +96,26 @@ public class SmoothSort {
             array[i] = getHigh(currentRoot).getValue(); //Берем значение из исходного массива и на его место ставим наибольшее значение корня
             counter++;
 
-            if (currentRoot.getRight() != null) currentRoot = currentRoot.getRight();//Если справа от самого правого элемента
-            else currentRoot = currentRoot.getPrevRootOfHeap();//Больше ничего нет, то достаем связанный узел с кучей, куча кончилась
+            if (currentRoot.getRight() != null)
+                currentRoot = currentRoot.getRight();//Если справа от самого правого элемента
+            else
+                currentRoot = currentRoot.getPrevRootOfHeap();//Больше ничего нет, то достаем связанный узел с кучей, куча кончилась
         }
         for (int i = array.length - bound - 1; i >= 0; i--) {//Если граница больше длины исходного массива. Если нет, цикл не запустится.
             array[i] = currentRoot.getValue(); //Получаем значение самого правого элементав куче и записываем в массив.
-            if (currentRoot.getRight() != null) currentRoot = currentRoot.getRight(); //Если справа еще есть элементы, то делаем их правыми.
+            if (currentRoot.getRight() != null)
+                currentRoot = currentRoot.getRight(); //Если справа еще есть элементы, то делаем их правыми.
             else currentRoot = currentRoot.getPrevRootOfHeap(); //Если нет, достаем узел,связанный с этой кучей
         }
     }
+
     // Просейка, возвращает узел с самым большим значением.
     public Node getHigh(Node root) {
         siftBetweenHeaps(root, root, root);
         return root;
     }
-//Просейка между кучами
+
+    //Просейка между кучами
     public Node siftBetweenHeaps(Node root, Node current, Node result) {
         Node prevRoot = current.getPrevRootOfHeap(); //Первый узел в куче
         if (prevRoot != null) { //Если не пустой
@@ -103,7 +131,8 @@ public class SmoothSort {
         }
         return root;
     }
-//Просейка внутри кучи
+
+    //Просейка внутри кучи
     public Node siftInHeap(Node root) {
         if (root != null && root.getLeft() != null) {
             Node maxNode = null;
@@ -123,7 +152,8 @@ public class SmoothSort {
         }
         return root; // Вернёт наименьший node
     }
-//Меняем узлы местами
+
+    //Меняем узлы местами
     public void swapValues(Node n1, Node n2) {
         int temp = n2.getValue();
         n2.setValue(n1.getValue());

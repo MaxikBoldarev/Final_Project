@@ -1,4 +1,4 @@
-package org.example.sorting;
+package org.example.Models;
 
 public class Node {
     private int value;
@@ -6,6 +6,7 @@ public class Node {
     private Node right;
     private Node prevRootOfHeap;
     private int sizeOfHeap = 1;
+
     public Node(int value) {
         this.value = value;
     }
@@ -34,7 +35,7 @@ public class Node {
         this.right = right;
     }
 
-    public Node getPrevRootOfHeap() { //Достать связаный узел
+    public Node getPrevRootOfHeap() { //Достать связанный узел
         return prevRootOfHeap;
     }
 
