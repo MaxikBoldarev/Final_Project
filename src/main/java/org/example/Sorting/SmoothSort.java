@@ -8,19 +8,14 @@ import org.example.Repository.SortedDataRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class SmoothSort {
-    private final GenerationDataRepository generationDataRepository;
-    private final SortedDataRepository sortedDataRepository;
-
-    public SmoothSort(GenerationDataRepository generationDataRepository, SortedDataRepository sortedDataRepository) {
-        this.generationDataRepository = generationDataRepository;
-        this.sortedDataRepository = sortedDataRepository;
-    }
-
+    private final GenerationDataRepository generationDataRepository = GenerationDataRepository.getInstance();
+    private final SortedDataRepository sortedDataRepository = SortedDataRepository.getInstance();
     int counter;
 
-    public void sort() {
+    public void sortArray() {
         int[] arr = generationDataRepository.getCoffeeListForSorted();
         sortLocal(arr, arr.length);
         System.out.println("Количество перестановок " + counter);
@@ -31,13 +26,13 @@ public class SmoothSort {
         List<Coffee> coffeeList = generationDataRepository.getCoffeeList();
         List<Coffee> sortedCoffeeList = new ArrayList<>();
 
-        for (int i = 0; i < primaryArray.length; i++) {
+        IntStream.range(0, primaryArray.length).forEach(i -> {
             for (Coffee coffee : coffeeList) {
                 if (primaryArray[i] == coffee.getPrice()) {
                     sortedCoffeeList.add(coffee);
                 }
             }
-        }
+        });
         sortedDataRepository.setCoffeeList(sortedCoffeeList);
     }
 

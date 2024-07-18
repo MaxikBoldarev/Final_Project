@@ -1,20 +1,20 @@
 package org.example.DataGeneration;
 
 import org.example.Models.Coffee;
-import org.example.Repository.GenerationDataRepository;
+import org.example.Repository.DataRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
-public class UserGeneration {
-    private final GenerationDataRepository generationDataRepository;
-
-    public UserGeneration(GenerationDataRepository generationDataRepository) {
-        this.generationDataRepository = generationDataRepository;
+public class UserGeneration extends DataGeneration {
+    @Override
+    public void setDataRepository(DataRepository dataRepository) {
+        super.setDataRepository(dataRepository);
     }
 
+    @Override
     public void dataGeneration(int count) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Введите целое число больше 0");
@@ -46,7 +46,7 @@ public class UserGeneration {
                             .build();
 
                     coffeeList.add(coffee);
-                    generationDataRepository.setCoffeeList(coffeeList);
+                    super.getDataRepository().setCoffeeList(coffeeList);
                 }
                 System.out.println("Способ генерации 'Ручной' выполнен");
             }

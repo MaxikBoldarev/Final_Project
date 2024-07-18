@@ -12,7 +12,6 @@ public enum PaymentType {
 
     @Override
     public String toString() {
-        // Преобразуем имя enum в строку с первой заглавной буквой и остальными строчными
         String lower = name().toLowerCase();
         return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
     }

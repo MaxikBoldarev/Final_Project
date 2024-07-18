@@ -7,29 +7,17 @@ import org.example.Repository.SortedDataRepository;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.Math.ceil;
 import static java.lang.Math.floor;
 
 public class LibrarySort {
 
-    private GenerationDataRepository generationDataRepository;
-    private final SortedDataRepository sortedDataRepository;
-
-    public LibrarySort(GenerationDataRepository generationDataRepository, SortedDataRepository sortedDataRepository) {
-        this.generationDataRepository = generationDataRepository;
-        this.sortedDataRepository = sortedDataRepository;
-    }
-
+    private final GenerationDataRepository generationDataRepository = GenerationDataRepository.getInstance();
+    private final SortedDataRepository sortedDataRepository = SortedDataRepository.getInstance();
     private int counter = 0;
-
-
-//    private final int[] primaryArray = generationDataRepository.getCoffeeListForSorted(); //Основной массив
-//    private final int primaryLength = primaryArray.length; // Длина основного массива
-//    private final int e = 2;//Во сколько раз увеличить массив
-//    private final int arrayLength = e * (primaryLength + 1) - 1;//Формула для расчета количества элементов во вспомогательном массиве.
     private int[] supportingArray; //Вспомогательный массив
-
 
     //Основной метод
     public void sortArray(boolean localRebalance) {
@@ -38,18 +26,15 @@ public class LibrarySort {
         int e = 2;//Во сколько раз увеличить массив
         int arrayLength = e * (primaryLength + 1) - 1;//Формула для расчета количества элементов во вспомогательном массиве.
         supportingArray = new int[arrayLength]; //Вспомогательный массив
-
         supportingArray[sortPos(1, 1, arrayLength)] = primaryArray[0]; //Переносим первый элемент в середину вспомогательного массива
         int i = 1; // Итерация с единицы, тк первый элемент уже вставлен.
         int start = 0;
         int finish = arrayLength - 1;
         int pos; // Позиция для переноса элемента
         localRebalance = false;//Локальная или полная(false) перебалансировка
-        System.out.println("Дополнительный перед вставкой " + Arrays.toString(supportingArray));
         //Перебираем элементы основного массива
         while (i < primaryLength) {
             pos = binarySearch(primaryArray[i], start, finish, arrayLength); // Позиция для вставки в доп массив
-            System.out.println("Итерация " + i + ", позиция для вставки " + pos + ", число " + primaryArray[i]);
             //Бинарным поиском ищем место для вставки в дополнительном массиве
             //Точки вставки нашлась, но надо проверить, свободна ли она
             if (supportingArray[pos] != 0) {
@@ -67,11 +52,9 @@ public class LibrarySort {
                 //Свободная точка для вставки найдена, вставляем
                 supportingArray[pos] = primaryArray[i];
             }
-            System.out.println("Дополнительный массив после вставки " + Arrays.toString(supportingArray));
             i++;
         }
         //Переносим из дополнительного массива в основной
-        System.out.println("Дополнительный массив перед переносом " + Arrays.toString(supportingArray));
         pos = 0;
         for (i = 0; i <= arrayLength - 1; i++) {
             if (supportingArray[i] != 0) {
@@ -87,13 +70,13 @@ public class LibrarySort {
         List<Coffee> coffeeList = generationDataRepository.getCoffeeList();
         List<Coffee> sortedCoffeeList = new ArrayList<>();
 
-        for (int i = 0; i < primaryArray.length; i++) {
+        IntStream.range(0, primaryArray.length).forEach(i -> {
             for (Coffee coffee : coffeeList) {
                 if (primaryArray[i] == coffee.getPrice()) {
                     sortedCoffeeList.add(coffee);
                 }
             }
-        }
+        });
         sortedDataRepository.setCoffeeList(sortedCoffeeList);
     }
 

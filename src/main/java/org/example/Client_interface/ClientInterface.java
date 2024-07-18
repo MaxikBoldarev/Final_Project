@@ -1,9 +1,11 @@
 package org.example.Client_interface;
 
 import org.example.DataGeneration.CSVFileGeneration;
+import org.example.DataGeneration.DataGeneration;
 import org.example.DataGeneration.RandomGeneration;
 import org.example.DataGeneration.UserGeneration;
 import org.example.Models.Coffee;
+import org.example.Repository.DataRepository;
 import org.example.Repository.GenerationDataRepository;
 import org.example.Repository.SortedDataRepository;
 import org.example.Sorting.LibrarySort;
@@ -12,13 +14,7 @@ import org.example.Sorting.SmoothSort;
 import java.util.Scanner;
 
 public class ClientInterface {
-    private final GenerationDataRepository generationDataRepository = new GenerationDataRepository();
-    private final SortedDataRepository sortedDataRepository = new SortedDataRepository();
-    private final UserGeneration userGeneration = new UserGeneration(generationDataRepository);
-    private final RandomGeneration randomGeneration = new RandomGeneration(generationDataRepository);
-    private final CSVFileGeneration csvFileGeneration = new CSVFileGeneration(generationDataRepository);
     private final Scanner scanner = new Scanner(System.in);
-
 
     public void starClientInterface() {
         boolean bool = true;
@@ -66,22 +62,25 @@ public class ClientInterface {
                 """);
 
         int choice = scanner.nextInt();
-        System.out.println("Укажите кол-во строк в документе:");
-        int count = scanner.nextInt();
+        DataGeneration dataGeneration;
         switch (choice) {
             case 1:
-                userGeneration.dataGeneration(count);
+                dataGeneration = new UserGeneration();
                 break;
             case 2:
-                randomGeneration.dataGeneration(count);
+                dataGeneration = new RandomGeneration();
                 break;
             case 3:
-                csvFileGeneration.dataGeneration(count);
+                dataGeneration = new CSVFileGeneration();
                 break;
             default:
                 System.out.println("Ошибка ввода! Пожалуйста, введите число соответствующее выбранной команде");
-                break;
+                return;
         }
+        System.out.println("Укажите кол-во строк в документе:");
+        int count = scanner.nextInt();
+        dataGeneration.setDataRepository(GenerationDataRepository.getInstance());
+        dataGeneration.dataGeneration(count);
     }
 
     public void choiceMethodSorted() {
@@ -93,19 +92,16 @@ public class ClientInterface {
                 Введите номер в консоль:
                 """);
 
-        LibrarySort librarySort = new LibrarySort(generationDataRepository, sortedDataRepository);
-        SmoothSort smoothSort = new SmoothSort(generationDataRepository, sortedDataRepository);
-
         int choice = scanner.nextInt();
         switch (choice) {
             case 1:
-                librarySort.sortArray(false);
+                new LibrarySort().sortArray(false);
                 break;
             case 2:
-                librarySort.sortArray(true);
+                new LibrarySort().sortArray(true);
                 break;
             case 3:
-                smoothSort.sort();
+                new SmoothSort().sortArray();
                 break;
             default:
                 System.out.println("Ошибка ввода! Пожалуйста, введите число соответствующее выбранной команде");
@@ -121,20 +117,20 @@ public class ClientInterface {
                 Введите номер в консоль:
                 """);
         int choice = scanner.nextInt();
+        DataRepository dataRepository;
         switch (choice) {
             case 1:
-                for (Coffee coffee : generationDataRepository.getCoffeeList()) {
-                    System.out.println(coffee);
-                }
+                dataRepository = GenerationDataRepository.getInstance();
                 break;
             case 2:
-                for (Coffee coffee : sortedDataRepository.getCoffeeList()) {
-                    System.out.println(coffee);
-                }
+                dataRepository = SortedDataRepository.getInstance();
                 break;
             default:
                 System.out.println("Ошибка ввода! Пожалуйста, введите число соответствующее выбранной команде");
-                break;
+                return;
+        }
+        for (Coffee coffee : dataRepository.getCoffeeList()) {
+            System.out.println(coffee);
         }
     }
 }
